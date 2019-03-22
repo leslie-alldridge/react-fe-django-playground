@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "./App.css";
+import cookie from "react-cookies";
 
 class App extends Component {
   constructor(props) {
@@ -22,9 +23,17 @@ class App extends Component {
   handleSubmit = e => {
     e.preventDefault();
     console.log(this.state);
+    const token = cookie.load("csrftoken");
+    console.log(token);
 
     axios
-      .post("http://localhost:8000/accounts/signup/", this.state)
+      .post("http://localhost:8000/accounts/signup/", this.state, {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "X-CSRFToken": token
+        }
+      })
       .then(function(response) {
         console.log(response);
       })
@@ -41,13 +50,21 @@ class App extends Component {
           <form onSubmit={this.handleSubmit}>
             {/* {% csrf_token %} */}
             {/* {{ form.as_p }} */}
-            <input onChange={this.handleChange} type="email" name="email" />
+
             <input
+              placeholder="email"
+              onChange={this.handleChange}
+              type="email"
+              name="email"
+            />
+            <input
+              placeholder="pw1"
               onChange={this.handleChange}
               type="password"
               name="password1"
             />
             <input
+              placeholder="pw2"
               onChange={this.handleChange}
               type="password"
               name="password2"
