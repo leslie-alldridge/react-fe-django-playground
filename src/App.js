@@ -22,24 +22,25 @@ class App extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
-    const token = cookie.load("csrftoken");
-    console.log(token);
+
+    // make data send as form data
+    var bodyFormData = new FormData();
+    bodyFormData.set("email", this.state.email);
+    bodyFormData.set("password1", this.state.password1);
+    bodyFormData.set("password2", this.state.password2);
+
+    //default naming for cookie and header
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+
+    //headers
+    const headers = {
+      "X-CSRFTOKEN": cookie.load("csrftoken")
+    };
 
     axios
-      .post("http://localhost:8000/accounts/signup/", this.state, {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "X-CSRFToken": token
-        }
-      })
-      .then(function(response) {
-        console.log(response);
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+      .post("/accounts/signup/", bodyFormData, { headers })
+      .then(data => console.log(data));
   };
 
   render() {
