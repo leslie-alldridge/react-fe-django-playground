@@ -2,15 +2,18 @@ import React, { Component } from "react";
 import axios from "axios";
 import "./App.css";
 import cookie from "react-cookies";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.withCredentials = true;
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      email: "",
-      password1: "",
-      password2: ""
+      email: "leslie.alldri3dgwe@gmail.com",
+      password1: "test123T",
+      password2: "test123T"
     };
   }
 
@@ -22,25 +25,25 @@ class App extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-
-    // make data send as form data
-    var bodyFormData = new FormData();
-    bodyFormData.set("email", this.state.email);
-    bodyFormData.set("password1", this.state.password1);
-    bodyFormData.set("password2", this.state.password2);
-
-    //default naming for cookie and header
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-
-    //headers
-    const headers = {
-      "X-CSRFTOKEN": cookie.load("csrftoken")
-    };
-
+    var myUrl = "/accounts/signup/";
+    var myData = "email=hihi%40gmail.com&password1=test123T&password2=test123T";
     axios
-      .post("/accounts/signup/", bodyFormData, { headers })
-      .then(data => console.log(data));
+      .post(myUrl, myData, {
+        headers: {
+          "X-CSRFToken": cookie.load("csrftoken"),
+          "Content-Type": "application/x-www-form-urlencoded",
+          "cache-control": "no-cache"
+        }
+        // other configuration there
+      })
+      .then(function(response) {
+        alert("yeah!");
+        console.log(response);
+      })
+      .catch(function(error) {
+        alert("oops");
+        console.log(error);
+      });
   };
 
   render() {
